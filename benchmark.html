@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LiteBrowser 官方性能实测对比报告 - Benchmark</title>
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: rgba(23, 32, 54, 0.7);
+      --border: rgba(255, 255, 255, 0.08);
+      --primary: #3b82f6;
+      --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
+      --accent: #10b981;
+      --accent-danger: #ef4444;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); line-height: 1.6; }
+
+    nav {
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(12px);
+      background: rgba(11, 15, 25, 0.85);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .logo-container { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: #fff; font-weight: 700; font-size: 1.25rem; }
+    .logo-container img { width: 32px; height: 32px; border-radius: 6px; }
+    .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+    .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.95rem; transition: color 0.2s; }
+    .nav-links a:hover { color: #fff; }
+    .btn-nav {
+      background: var(--primary-gradient);
+      color: #fff !important;
+      padding: 0.45rem 1rem;
+      border-radius: 8px;
+      font-weight: 500;
+    }
+
+    .container { max-width: 1000px; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+
+    .header-section { text-align: center; margin-bottom: 3.5rem; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #34d399;
+      padding: 0.3rem 0.9rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+    }
+    h1 { font-size: 2.6rem; font-weight: 800; margin-bottom: 1rem; }
+    .desc { color: var(--text-muted); font-size: 1.1rem; max-width: 750px; margin: 0 auto; }
+
+    /* Environment Card */
+    .env-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 3rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+    .env-item h4 { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.35rem; }
+    .env-item p { font-size: 1.05rem; font-weight: 600; color: #fff; }
+
+    /* Scenario Card */
+    .scenario-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem;
+      margin-bottom: 3rem;
+    }
+    .scenario-title { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+    .scenario-title h2 { font-size: 1.6rem; font-weight: 700; }
+    .scenario-badge {
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+      font-size: 0.8rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+    .scenario-intro { color: var(--text-muted); margin-bottom: 1.5rem; font-size: 1rem; }
+
+    /* URL Box */
+    .url-box {
+      background: rgba(11, 15, 25, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+    }
+    .url-box-label { font-weight: 600; color: #94a3b8; margin-bottom: 0.5rem; display: block; }
+    .url-list { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
+    .url-list li a { color: #60a5fa; text-decoration: none; word-break: break-all; }
+    .url-list li a:hover { text-decoration: underline; }
+
+    /* Table */
+    .data-table-wrapper { overflow-x: auto; margin-bottom: 1.5rem; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem; }
+    th, td { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); }
+    th { color: var(--text-muted); font-weight: 600; background: rgba(255, 255, 255, 0.02); }
+    tr:last-child td { border-bottom: none; }
+    .diff-highlight { color: #34d399; font-weight: 700; font-size: 1.05rem; }
+    .winner-col { color: #60a5fa; font-weight: 600; }
+
+    /* Analysis Box */
+    .analysis-box {
+      background: rgba(59, 130, 246, 0.08);
+      border-left: 4px solid var(--primary);
+      padding: 1rem 1.25rem;
+      border-radius: 0 8px 8px 0;
+      color: #cbd5e1;
+      font-size: 0.95rem;
+    }
+
+    /* AI Prompt Section */
+    .prompt-section {
+      background: linear-gradient(135deg, rgba(23, 32, 54, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%);
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      border-radius: 20px;
+      padding: 2.5rem;
+      margin-top: 4rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    .prompt-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem; }
+    .prompt-header h3 { font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+    .btn-copy {
+      background: var(--primary-gradient);
+      color: #fff;
+      border: none;
+      padding: 0.6rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn-copy:hover { opacity: 0.9; }
+    .btn-copy:active { transform: scale(0.97); }
+    .prompt-tip { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.25rem; }
+
+    .prompt-code-container {
+      position: relative;
+      background: #060911;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      overflow-x: auto;
+    }
+    pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.88rem;
+      color: #e2e8f0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.5;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 5rem;
+    }
+    footer a { color: #60a5fa; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="logo-container">
+      <img src="assets/logo.png" alt="LiteBrowser Logo">
+      <span>LiteBrowser</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="benchmark.html" style="color: #60a5fa; font-weight: 600;">📊 实测报告</a>
+      <a href="https://github.com/hikariCodeAi/litebrowser" target="_blank">GitHub</a>
+      <a href="https://github.com/hikariCodeAi/litebrowser/releases" target="_blank" class="btn-nav">立即下载</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="header-section">
+      <div class="badge">🔬 100% 真实实机测定 · 零伪造数据</div>
+      <h1>LiteBrowser 性能实测基准报告</h1>
+      <p class="desc">在完全相同的硬件设备与纯净隔离环境下，LiteBrowser (v155.0.8059.39) 与官方最新 Google Chrome 稳定版 (v155.0.8059.82) 的全进程物理内存对照评测。</p>
+    </div>
+
+    <!-- 测试环境摘要 -->
+    <div class="env-card">
+      <div class="env-item">
+        <h4>测试设备与系统</h4>
+        <p>macOS Apple Silicon (M系列架构)</p>
+      </div>
+      <div class="env-item">
+        <h4>官方对照基线</h4>
+        <p>Google Chrome v155.0.8059.82</p>
+      </div>
+      <div class="env-item">
+        <h4>测试版本</h4>
+        <p>LiteBrowser v155.0.8059.39</p>
+      </div>
+      <div class="env-item">
+        <h4>统计口径</h4>
+        <p>全进程树高频物理 RSS 递归求和</p>
+      </div>
+    </div>
+
+    <!-- 场景一：单页高清视频 -->
+    <div class="scenario-card">
+      <div class="scenario-title">
+        <h2>场景一：单页高清视频流媒体播放</h2>
+        <span class="scenario-badge">流媒体缓冲与解码池优化</span>
+      </div>
+      <p class="scenario-intro">考验现代浏览器在连续加载、缓冲和解码 1080P/4K 高清流媒体视频时的内存治理表现。传统内核通常会累积几十兆至数百兆的解码帧与缓冲池而不予退还。</p>
+
+      <div class="url-box">
+        <span class="url-box-label">📍 本轮实际测试网址（全网公开、免登录）：</span>
+        <ul class="url-list">
+          <li>🎥 <strong>Bilibili 1080P 视频页</strong>：<a href="https://www.bilibili.com/video/BV1GJ411x7h7" target="_blank">https://www.bilibili.com/video/BV1GJ411x7h7</a></li>
+        </ul>
+      </div>
+
+      <div class="data-table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>运行阶段 / 观测指标</th>
+              <th>Google Chrome 官方版</th>
+              <th>LiteBrowser</th>
+              <th>削减比例 (%)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>初始加载峰值 (Peak)</strong></td>
+              <td>833.09 MB</td>
+              <td class="winner-col">774.39 MB</td>
+              <td>-7.05%</td>
+            </tr>
+            <tr>
+              <td><strong>全程平均占用 (Avg)</strong></td>
+              <td>527.02 MB</td>
+              <td class="winner-col">323.96 MB</td>
+              <td class="diff-highlight">-38.53%</td>
+            </tr>
+            <tr>
+              <td><strong>稳定播放期静置 (Settled)</strong></td>
+              <td>481.67 MB</td>
+              <td class="winner-col">268.91 MB</td>
+              <td class="diff-highlight">-44.17% (大幅降低)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="analysis-box">
+        💡 <strong>技术归因解析</strong>：原生 Chrome 在加载视频后，预缓冲池和解码帧长期锁定在渲染进程和 GPU 进程中无法回落（稳定期长期停留在近 500 MB 甚至更高）；而 LiteBrowser 的 <strong>LRU 视频池回收</strong> 与 <strong>PartitionAlloc 空闲页退还机制</strong> 在初始渲染后迅速生效，将稳定期内存直接压降至 <strong>~268 MB</strong>。
+      </div>
+    </div>
+
+    <!-- 场景二：多标签高负载并发 -->
+    <div class="scenario-card">
+      <div class="scenario-title">
+        <h2>场景二：多标签页日常高并发</h2>
+        <span class="scenario-badge">多渲染进程累加效益</span>
+      </div>
+      <p class="scenario-intro">模拟高密度多任务操作，一次性并行打开包含流媒体视频、复杂动效图层、超大代码 DOM 树以及基础入口的 4 个真实复杂标签页。</p>
+
+      <div class="url-box">
+        <span class="url-box-label">📍 本轮实际测试网址列表（4 标签组合）：</span>
+        <ul class="url-list">
+          <li>1. <strong>高清视频流</strong>：<a href="https://www.bilibili.com/video/BV1GJ411x7h7" target="_blank">https://www.bilibili.com/video/BV1GJ411x7h7</a></li>
+          <li>2. <strong>高密度动画与渲染</strong>：<a href="https://www.apple.com.cn/macbook-pro/" target="_blank">https://www.apple.com.cn/macbook-pro/</a></li>
+          <li>3. <strong>复杂 DOM 与超长代码树</strong>：<a href="https://github.com/torvalds/linux" target="_blank">https://github.com/torvalds/linux</a></li>
+          <li>4. <strong>高频搜索入口</strong>：<a href="https://www.baidu.com/" target="_blank">https://www.baidu.com/</a></li>
+        </ul>
+      </div>
+
+      <div class="data-table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>运行阶段 / 观测指标</th>
+              <th>Google Chrome 官方版</th>
+              <th>LiteBrowser</th>
+              <th>削减比例 (%)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>并发加载峰值 (Peak)</strong></td>
+              <td>1039.34 MB</td>
+              <td class="winner-col">916.94 MB</td>
+              <td>-11.78%</td>
+            </tr>
+            <tr>
+              <td><strong>全程平均占用 (Avg)</strong></td>
+              <td>678.44 MB</td>
+              <td class="winner-col">392.94 MB</td>
+              <td class="diff-highlight">-42.08%</td>
+            </tr>
+            <tr>
+              <td><strong>多标签静置期 (Settled)</strong></td>
+              <td>630.14 MB</td>
+              <td class="winner-col">351.48 MB</td>
+              <td class="diff-highlight">-44.22% (节省近 280MB)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="analysis-box">
+        💡 <strong>技术归因解析</strong>：在 Chromium 的多进程架构中，每个标签页对应的渲染进程（Renderer）都拥有独立的 V8 堆余量和渲染缓存。LiteBrowser 在各进程中主动削减冗余线程缓存并回收已提交空闲页，多标签并发时产生了显著的<strong>倍数累加效应</strong>，平稳运行期相比 Chrome 节省了近 <strong>280 MB 真实物理空间</strong>。
+      </div>
+    </div>
+
+    <!-- 让 AI 完成测试的提示词板块 -->
+    <div class="prompt-section">
+      <div class="prompt-header">
+        <h3>🤖 让你的 AI 助手一键复现这两项测试</h3>
+        <button class="btn-copy" onclick="copyPrompt()">
+          <span id="copy-icon">📋</span>
+          <span id="copy-text">一键复制 AI 提示词</span>
+        </button>
+      </div>
+      <p class="prompt-tip">
+        将下方的完整提示词直接复制并发送给你的 AI 编程助手（如 Claude Code, Cursor, Windsurf, ChatGPT, Gemini CLI 等）。AI 将自动检测你电脑上已安装的 LiteBrowser 与 Google Chrome，执行完全隔离的高频内存采样测试并打印对比表格。
+      </p>
+
+      <div class="prompt-code-container">
+        <pre id="prompt-content">请帮我测试本机上安装的 LiteBrowser 与 Google Chrome 官方版的内存占用对比，严格按照官方 Benchmark 规范执行并输出数据表格：
+
+1. **测试要求**：
+   - 不要修改任何代码。
+   - 使用完全隔离的全新临时 Profile 目录（如 /tmp/bench_prof_*），避免污染用户日常数据或扩展干扰。
+   - 两个浏览器分别以前台独立窗口启动（同为 1280x800），各独立运行测试 30 秒，测试完毕后优雅退出并清理临时目录。
+   - 在这 30 秒内，每秒采样一次浏览器完整进程树（包含主进程、所有 Helper、Renderer、GPU 进程）的物理内存（RSS）求和。
+
+2. **执行两个测试场景**：
+   - **场景一：单页高清视频播放**
+     目标网址：https://www.bilibili.com/video/BV1GJ411x7h7
+   - **场景二：4 标签高并发组合**
+     同时打开：
+     1) https://www.bilibili.com/video/BV1GJ411x7h7
+     2) https://www.apple.com.cn/macbook-pro/
+     3) https://github.com/torvalds/linux
+     4) https://www.baidu.com/
+
+3. **输出要求**：
+   - 依次记录并计算：加载峰值 (Peak)、全程平均占用 (Avg)、稳定静置期 (Settled) 的内存数值 (MB) 及削减比例 (%)。
+   - 输出清晰的 Markdown 格式性能对比表格，并给出分析总结。</pre>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 LiteBrowser Project. 源码与证据归档请访问官方仓库 <a href="https://github.com/hikariCodeAi/litebrowser" target="_blank">hikariCodeAi/litebrowser</a></p>
+    </div>
+  </footer>
+
+  <script>
+    function copyPrompt() {
+      const text = document.getElementById('prompt-content').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const copyText = document.getElementById('copy-text');
+        const copyIcon = document.getElementById('copy-icon');
+        copyText.innerText = '已复制到剪贴板！';
+        copyIcon.innerText = '✅';
+        setTimeout(() => {
+          copyText.innerText = '一键复制 AI 提示词';
+          copyIcon.innerText = '📋';
+        }, 2500);
+      }).catch(err => {
+        alert('复制失败，请手动选中文本复制');
+      });
+    }
+  </script>
+</body>
+</html>

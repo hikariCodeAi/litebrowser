@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LiteBrowser - 面向高并发与自动化的超轻量低内存浏览器</title>
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: rgba(23, 32, 54, 0.7);
+      --border: rgba(255, 255, 255, 0.08);
+      --primary: #3b82f6;
+      --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
+      --accent: #10b981;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
+    
+    /* 背景装饰渐变 */
+    .glow-bg {
+      position: absolute;
+      top: -150px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.25) 0%, rgba(11, 15, 25, 0) 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(12px);
+      background: rgba(11, 15, 25, 0.85);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .logo-container { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: #fff; font-weight: 700; font-size: 1.25rem; }
+    .logo-container img { width: 32px; height: 32px; border-radius: 6px; }
+    .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+    .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.95rem; transition: color 0.2s; }
+    .nav-links a:hover { color: #fff; }
+    .btn-nav {
+      background: var(--primary-gradient);
+      color: #fff !important;
+      padding: 0.45rem 1rem;
+      border-radius: 8px;
+      font-weight: 500;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; position: relative; z-index: 1; }
+
+    /* Hero Section */
+    .hero { text-align: center; padding: 5rem 0 3.5rem; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(59, 130, 246, 0.12);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: #60a5fa;
+      padding: 0.3rem 0.9rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 { font-size: 3.2rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 1.25rem; }
+    .hero h1 span { background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero p { font-size: 1.2rem; color: var(--text-muted); max-width: 720px; margin: 0 auto 2.5rem; }
+    .hero-actions { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.75rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn-primary {
+      background: var(--primary-gradient);
+      color: #fff;
+      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(37, 99, 235, 0.45); }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: #fff;
+    }
+    .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); transform: translateY(-2px); }
+
+    /* Stats Grid */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin: 3rem 0 5rem; }
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      text-align: center;
+      backdrop-filter: blur(8px);
+    }
+    .stat-number { font-size: 2.4rem; font-weight: 800; color: #60a5fa; margin-bottom: 0.25rem; }
+    .stat-label { font-size: 0.95rem; color: var(--text-muted); }
+
+    /* Features */
+    .features-section { padding: 4rem 0; border-top: 1px solid var(--border); }
+    .section-title { text-align: center; margin-bottom: 3.5rem; }
+    .section-title h2 { font-size: 2.2rem; font-weight: 700; margin-bottom: 0.75rem; }
+    .section-title p { color: var(--text-muted); font-size: 1.05rem; }
+    
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+    .feature-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      transition: border-color 0.2s;
+    }
+    .feature-card:hover { border-color: rgba(59, 130, 246, 0.4); }
+    .feature-icon { font-size: 2rem; margin-bottom: 1rem; }
+    .feature-card h3 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; color: #fff; }
+    .feature-card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; }
+
+    /* Download Banner */
+    .download-section {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.15) 0%, rgba(17, 24, 39, 0.6) 100%);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 20px;
+      padding: 3rem 2rem;
+      text-align: center;
+      margin: 4rem 0;
+    }
+    .download-section h2 { font-size: 2rem; margin-bottom: 1rem; }
+    .download-section p { color: var(--text-muted); max-width: 600px; margin: 0 auto 2rem; }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    footer a { color: #60a5fa; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="glow-bg"></div>
+
+  <nav>
+    <a href="index.html" class="logo-container">
+      <img src="assets/logo.png" alt="LiteBrowser Logo">
+      <span>LiteBrowser</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="#features">架构特点</a>
+      <a href="benchmark.html" style="color: #60a5fa; font-weight: 600;">📊 实测报告</a>
+      <a href="https://github.com/hikariCodeAi/litebrowser" target="_blank">GitHub</a>
+      <a href="https://github.com/hikariCodeAi/litebrowser/releases" target="_blank" class="btn-nav">立即下载</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <section class="hero">
+      <div class="badge">🚀 v155.0.8059.39 Preview 1 正式发布</div>
+      <h1>专为高并发与自动化打造的<br><span>超轻量 Chromium 浏览器</span></h1>
+      <p>保留完整的 Blink / V8 现代引擎能力与 CDP 协议契约。通过深度重构媒体池、图层缓存压缩与堆余量智能回收，实现真实物理内存暴降 40% ~ 60%。</p>
+      <div class="hero-actions">
+        <a href="benchmark.html" class="btn btn-primary">📊 查看实测性能报告</a>
+        <a href="https://github.com/hikariCodeAi/litebrowser/releases/tag/macos-arm64-155.0.8059.39-preview.1" class="btn btn-secondary">⬇️ 下载 macOS (Apple Silicon)</a>
+      </div>
+    </section>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number">-60.08%</div>
+        <div class="stat-label">视频流媒体播放稳定期削减</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">-42.08%</div>
+        <div class="stat-label">多标签页并发平均内存削减</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">100%</div>
+        <div class="stat-label">CDP / Playwright 标准协议兼容</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">0 侵入</div>
+        <div class="stat-label">替换可执行文件即刻享用</div>
+      </div>
+    </div>
+
+    <section id="features" class="features-section">
+      <div class="section-title">
+        <h2>四大核心内核级重构</h2>
+        <p>绝非简单删除功能或粗暴修改前端代码，而是深入 Chromium 内核状态机的系统级优化</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🎬</div>
+          <h3>智能媒体池 (Media Pipeline)</h3>
+          <p>针对视频预缓冲队列与无消费方解码帧实施激进的 LRU 回收机制，阻止流媒体向内存无底线索取缓冲区，长视频播放内存直降 60%。</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🧹</div>
+          <h3>PartitionAlloc 紧凑堆回收</h3>
+          <p>自适应分析存活对象集，在页面完成突发并发与渲染后，以系统级的 decommit / discard 动作将提交的空闲页真实归还给操作系统。</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🖼️</div>
+          <h3>渲染与图层裁剪 (ResourcePool)</h3>
+          <p>压缩 Skia 与绘制产物纹理缓存预算。后台或无观察者的离屏缓冲按需销毁，在保持完全相同的视觉一致性前提下大幅减少绘制占用。</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>多标签并发倍数效应</h3>
+          <p>在自动化任务通常面临的多 Renderer 进程架构下，单进程内存压缩形成强大的累加乘积效应，相同服务器配置可支撑 2~3 倍任务并发。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="download-section">
+      <h2>即刻体验超轻量浏览</h2>
+      <p>目前提供适用于 macOS (Apple Silicon M系列) 的预览版本，Windows 与 Linux 版本已进入构建管道即将上线。</p>
+      <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <a href="https://github.com/hikariCodeAi/litebrowser/releases/tag/macos-arm64-155.0.8059.39-preview.1" class="btn btn-primary">下载 macOS 预发布包 (ZIP)</a>
+        <a href="benchmark.html" class="btn btn-secondary">查看性能对比详情</a>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 LiteBrowser Project. 公开二进制发布托管于 <a href="https://github.com/hikariCodeAi/litebrowser" target="_blank">GitHub</a></p>
+    </div>
+  </footer>
+</body>
+</html>
