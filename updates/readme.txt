@@ -2,6 +2,8 @@ LiteBrowser product updates
 
 manifest.json is the public product-update manifest for LiteBrowser. It currently has no eligible product releases. Existing Chromium-version preview packages do not carry the independent product version/build contract and are intentionally excluded.
 
+The Linux 1.0.0 build 1 preview is available as a manual Release download. Automatic installation is not implemented on Linux, so this package is not added to the automatic-update manifest. The empty releases list does not indicate that no manual downloads exist.
+
 The browser checks this fixed HTTPS endpoint:
 https://raw.githubusercontent.com/hikariCodeAi/litebrowser/main/updates/manifest.json
 

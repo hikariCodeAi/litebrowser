@@ -169,7 +169,7 @@
     <div class="nav-links">
       <a href="index.html">首页</a>
       <a href="#features">架构特点</a>
-      <a href="benchmark.html" style="color: #60a5fa; font-weight: 600;">📊 实测报告</a>
+      <a href="https://github.com/hikariCodeAi/litebrowser/blob/main/docs/performance-report.md" style="color: #60a5fa; font-weight: 600;">📊 实测报告</a>
       <a href="https://github.com/hikariCodeAi/litebrowser" target="_blank">GitHub</a>
       <a href="https://github.com/hikariCodeAi/litebrowser/releases" target="_blank" class="btn-nav">立即下载</a>
     </div>
@@ -177,44 +177,45 @@
 
   <div class="container">
     <section class="hero">
-      <div class="badge">🚀 v155.0.8059.39 Preview 1 正式发布</div>
+      <div class="badge">🚀 LiteBrowser 1.0.0 Preview</div>
       <h1>专为高并发与自动化打造的<br><span>超轻量 Chromium 浏览器</span></h1>
-      <p>保留完整的 Blink / V8 现代引擎能力与 CDP 协议契约。通过深度重构媒体池、图层缓存压缩与堆余量智能回收，实现真实物理内存暴降 40% ~ 60%。</p>
+      <p>基于 Chromium，包含闲置媒体池、绘制缓存与空闲堆页的预算管理和回收策略，保留原生回退路径。本次 Linux 预览版的性能、长期稳定性与 Create 业务仍待验证。</p>
       <div class="hero-actions">
-        <a href="benchmark.html" class="btn btn-primary">📊 查看实测性能报告</a>
+        <a href="https://github.com/hikariCodeAi/litebrowser/blob/main/docs/performance-report.md" class="btn btn-primary">📊 查看性能验证范围</a>
         <a href="https://github.com/hikariCodeAi/litebrowser/releases/tag/macos-arm64-155.0.8059.39-preview.1" class="btn btn-secondary">⬇️ 下载 macOS (Apple Silicon)</a>
+        <a href="https://github.com/hikariCodeAi/litebrowser/releases/tag/linux-x86_64-1.0.0-preview.1" class="btn btn-secondary">⬇️ 下载 Linux (x86_64)</a>
       </div>
     </section>
 
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-number">-60.08%</div>
-        <div class="stat-label">视频流媒体播放稳定期削减</div>
+        <div class="stat-number">1.0.0</div>
+        <div class="stat-label">产品版本 · build 1</div>
       </div>
       <div class="stat-card">
-        <div class="stat-number">-42.08%</div>
-        <div class="stat-label">多标签页并发平均内存削减</div>
+        <div class="stat-number">155</div>
+        <div class="stat-label">Chromium 155.0.8059.39</div>
       </div>
       <div class="stat-card">
-        <div class="stat-number">100%</div>
-        <div class="stat-label">CDP / Playwright 标准协议兼容</div>
+        <div class="stat-number">CDP</div>
+        <div class="stat-label">标准自动化接口</div>
       </div>
       <div class="stat-card">
-        <div class="stat-number">0 侵入</div>
-        <div class="stat-label">替换可执行文件即刻享用</div>
+        <div class="stat-number">Preview</div>
+        <div class="stat-label">Linux x86_64 / macOS arm64</div>
       </div>
     </div>
 
     <section id="features" class="features-section">
       <div class="section-title">
-        <h2>四大核心内核级重构</h2>
-        <p>绝非简单删除功能或粗暴修改前端代码，而是深入 Chromium 内核状态机的系统级优化</p>
+        <h2>缓存与运行时策略</h2>
+        <p>基于 Chromium 的媒体、内存与绘制策略；实际效果以对应版本的受控验证为准</p>
       </div>
       <div class="features-grid">
         <div class="feature-card">
           <div class="feature-icon">🎬</div>
           <h3>智能媒体池 (Media Pipeline)</h3>
-          <p>针对视频预缓冲队列与无消费方解码帧实施激进的 LRU 回收机制，阻止流媒体向内存无底线索取缓冲区，长视频播放内存直降 60%。</p>
+          <p>对闲置解码帧与可回收媒体缓存实施预算管理，按消费状态回收余量；需要原生媒体能力时保留回退路径。</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">🧹</div>
@@ -224,22 +225,23 @@
         <div class="feature-card">
           <div class="feature-icon">🖼️</div>
           <h3>渲染与图层裁剪 (ResourcePool)</h3>
-          <p>压缩 Skia 与绘制产物纹理缓存预算。后台或无观察者的离屏缓冲按需销毁，在保持完全相同的视觉一致性前提下大幅减少绘制占用。</p>
+          <p>压缩 Skia 与绘制产物纹理缓存预算。后台或无观察者的离屏缓冲按需销毁，通过原生路径处理仍被使用的资源；具体视觉正确性与收益需按版本验证。</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">⚡</div>
-          <h3>多标签并发倍数效应</h3>
-          <p>在自动化任务通常面临的多 Renderer 进程架构下，单进程内存压缩形成强大的累加乘积效应，相同服务器配置可支撑 2~3 倍任务并发。</p>
+          <h3>标准 CDP 自动化接入</h3>
+          <p>提供 Chromium 标准 CDP 接口供自动化客户端接入。各平台的已测范围、已知限制与完整包校验和见对应 Release 说明。</p>
         </div>
       </div>
     </section>
 
     <section class="download-section">
       <h2>即刻体验超轻量浏览</h2>
-      <p>目前提供适用于 macOS (Apple Silicon M系列) 的预览版本，Windows 与 Linux 版本已进入构建管道即将上线。</p>
+      <p>提供 Linux x86_64 与 macOS (Apple Silicon M系列) 预览包。Linux 暂不支持直接自动安装更新；请按对应 Release 说明下载并核对 SHA256。Windows 版本尚未发布。</p>
       <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
         <a href="https://github.com/hikariCodeAi/litebrowser/releases/tag/macos-arm64-155.0.8059.39-preview.1" class="btn btn-primary">下载 macOS 预发布包 (ZIP)</a>
-        <a href="benchmark.html" class="btn btn-secondary">查看性能对比详情</a>
+        <a href="https://github.com/hikariCodeAi/litebrowser/releases/tag/linux-x86_64-1.0.0-preview.1" class="btn btn-primary">下载 Linux 预发布包 (tar.gz)</a>
+        <a href="https://github.com/hikariCodeAi/litebrowser/blob/main/docs/performance-report.md" class="btn btn-secondary">查看性能验证说明</a>
       </div>
     </section>
   </div>
