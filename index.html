@@ -601,142 +601,189 @@
             FIG. 01 / Chromium + memory policy
           </figcaption>
         </figure>
-        <section class="research" aria-label="示意图与预览版资料">
+        <section class="research" aria-label="历史 Linux 实测与预览版资料">
           <figure class="chart-panel">
             <h2>
-              Fig. 02 · 内存占用趋势
+              Fig. 02 · 物理内存采样
             </h2>
-            <svg class="chart" viewBox="0 0 360 175" role="img" aria-labelledby="trend-title trend-desc">
-              <title id="trend-title">
-                内存占用趋势示意图，非实测数据
+            <svg class="chart" viewBox="0 0 360 175" role="img" aria-labelledby="history-2-title history-2-desc">
+              <title id="history-2-title">
+                物理内存采样，历史 Linux 实测，2026-10-14
               </title>
-              <desc id="trend-desc">
-                横轴归一化时间，纵轴归一化内存。灰线代表基线示意，蓝线代表 LiteBrowser 策略示意；曲线仅用于解释设计意图，不表示发行版测量结果。
+              <desc id="history-2-desc">
+                100循环 TypedArray 与 Blob 合成负载。灰线 B3 原始基线，蓝线 L 八层候选。纵轴 cgroup memory.current，单位 MiB；横轴Time (s)。全部原始采样点依次连线，非当前发行版性能结论。
               </desc>
               <g class="grid">
-                <path d="M40 20H345M40 62H345M40 104H345M40 146H345M101 20V146M162 20V146M223 20V146M284 20V146"/>
+                <path d="M40 146.000H345"/>
+                <path d="M40 117.364H345"/>
+                <path d="M40 88.727H345"/>
+                <path d="M40 60.091H345"/>
+                <path d="M40 31.455H345"/>
+                <path d="M40.000 20V146"/>
+                <path d="M116.250 20V146"/>
+                <path d="M192.500 20V146"/>
+                <path d="M268.750 20V146"/>
+                <path d="M345.000 20V146"/>
               </g>
               <path class="axis" fill="none" d="M40 20H345V146H40Z"/>
               <g>
-                <text x="31" y="149" text-anchor="end">
-                  0.0
-                </text>
-                <text x="31" y="107" text-anchor="end">
-                  0.5
-                </text>
-                <text x="31" y="65" text-anchor="end">
-                  1.0
-                </text>
-                <text x="31" y="23" text-anchor="end">
-                  1.5
-                </text>
-                <text x="40" y="160" text-anchor="middle">
+                <text x="33" y="149.000" text-anchor="end">
                   0
                 </text>
-                <text x="101" y="160" text-anchor="middle">
-                  0.2
+                <text x="33" y="120.364" text-anchor="end">
+                  250
                 </text>
-                <text x="162" y="160" text-anchor="middle">
-                  0.4
+                <text x="33" y="91.727" text-anchor="end">
+                  500
                 </text>
-                <text x="223" y="160" text-anchor="middle">
-                  0.6
+                <text x="33" y="63.091" text-anchor="end">
+                  750
                 </text>
-                <text x="284" y="160" text-anchor="middle">
-                  0.8
+                <text x="33" y="34.455" text-anchor="end">
+                  1000
                 </text>
-                <text x="345" y="160" text-anchor="middle">
-                  1.0
+                <text x="40.000" y="160" text-anchor="middle">
+                  0
+                </text>
+                <text x="116.250" y="160" text-anchor="middle">
+                  20
+                </text>
+                <text x="192.500" y="160" text-anchor="middle">
+                  40
+                </text>
+                <text x="268.750" y="160" text-anchor="middle">
+                  60
+                </text>
+                <text x="345.000" y="160" text-anchor="middle">
+                  80
                 </text>
                 <text x="193" y="173" text-anchor="middle">
-                  Normalized time
+                  Time (s)
                 </text>
-                <text transform="translate(11 88) rotate(-90)" text-anchor="middle">
-                  Normalized memory
+                <text transform="translate(10 88) rotate(-90)" text-anchor="middle">
+                  Memory (MiB)
                 </text>
               </g>
-              <path class="baseline" d="M40 146L51 135L62 128L73 120L84 119L95 108L106 111L117 100L128 101L139 91L150 94L161 84L172 85L183 76L194 78L205 70L216 72L227 65L238 69L249 62L260 64L271 57L282 61L293 53L304 59L315 51L326 54L337 48L345 50"/>
-              <path class="lite" d="M40 146L51 139L62 134L73 129L84 127L95 122L106 121L117 116L128 117L139 112L150 114L161 109L172 110L183 107L194 109L205 105L216 108L227 105L238 107L249 104L260 106L271 103L282 106L293 103L304 106L315 103L326 105L337 102L345 104"/>
-              <g aria-label="图例：灰线 Baseline，蓝线 LiteBrowser">
-                <path class="baseline" d="M54 33H76"/>
-                <text x="82" y="36">
-                  Baseline
+              <path class="baseline" data-series="B3" data-samples="78" d="M40.000 146.000 L43.833 122.051 L47.651 113.481 L51.469 114.419 L55.287 114.365 L59.105 112.441 L62.920 111.344 L66.738 109.998 L70.556 109.237 L74.374 104.288 L78.193 99.333 L82.011 97.981 L85.829 92.762 L89.648 92.762 L93.466 79.503 L97.284 76.368 L101.102 74.950 L104.920 71.762 L108.739 70.136 L112.557 68.816 L116.374 67.190 L120.192 65.158 L124.008 63.725 L127.826 62.085 L131.644 60.176 L135.462 57.762 L139.280 55.846 L143.099 58.228 L146.917 58.342 L150.735 58.342 L154.553 56.647 L158.372 37.061 L162.191 40.420 L166.009 40.470 L169.827 40.470 L173.645 40.498 L177.463 40.346 L181.281 34.393 L185.099 34.394 L188.917 34.430 L192.735 43.023 L196.553 43.092 L200.371 37.020 L204.189 37.012 L208.007 37.012 L211.825 37.030 L215.643 37.032 L219.461 35.312 L223.279 37.411 L227.097 37.411 L230.915 37.411 L234.733 37.411 L238.551 37.411 L242.369 38.787 L246.187 38.861 L250.005 38.861 L253.823 38.861 L257.641 38.861 L261.459 41.442 L265.277 41.442 L269.095 41.442 L272.913 42.018 L276.731 41.992 L280.548 42.006 L284.366 42.153 L288.184 42.153 L292.002 42.153 L295.820 42.169 L299.638 42.206 L303.456 43.843 L307.274 43.866 L311.092 43.873 L314.910 43.875 L318.728 43.875 L322.546 43.875 L326.363 43.875 L330.181 43.848 L333.999 43.919"/>
+              <path class="lite" data-series="Candidate_L" data-samples="78" d="M40.000 146.000 L43.823 120.520 L47.641 114.834 L51.459 114.438 L55.277 114.411 L59.095 112.463 L62.913 112.466 L66.731 112.466 L70.549 112.595 L74.367 112.595 L78.185 112.595 L82.002 106.127 L85.820 106.038 L89.638 106.009 L93.456 106.024 L97.274 106.027 L101.092 105.323 L104.910 104.323 L108.728 104.323 L112.546 104.346 L116.364 104.346 L120.181 104.301 L123.999 105.263 L127.817 105.263 L131.635 105.270 L135.453 105.270 L139.271 105.289 L143.089 107.126 L146.907 107.126 L150.725 107.127 L154.543 107.127 L158.361 108.599 L162.179 112.597 L165.997 112.689 L169.815 112.695 L173.631 112.663 L177.449 112.498 L181.267 106.616 L185.085 106.616 L188.903 106.616 L192.721 115.084 L196.539 115.123 L200.358 109.120 L204.179 109.120 L207.997 109.125 L211.815 109.133 L215.633 109.135 L219.451 107.071 L223.269 109.742 L227.087 109.742 L230.904 109.742 L234.722 109.742 L238.540 106.677 L242.358 103.747 L246.176 103.759 L249.994 103.759 L253.812 115.041 L257.630 115.094 L261.448 109.048 L265.266 109.048 L269.083 109.058 L272.901 109.782 L276.719 109.782 L280.537 109.731 L284.355 109.925 L288.173 109.950 L291.991 116.076 L295.809 116.076 L299.627 116.076 L303.445 116.113 L307.263 116.113 L311.081 116.116 L314.899 116.116 L318.717 116.116 L322.534 116.144 L326.352 116.154 L330.170 116.156 L333.988 116.211"/>
+              <g aria-label="图例：灰线 B3 原始基线；蓝线 L 八层候选">
+
+                <path class="baseline" d="M54 8H76"/>
+                <text x="82" y="11">
+                  B3
                 </text>
-                <path class="lite" d="M54 47H76"/>
-                <text x="82" y="50">
-                  LiteBrowser
+                <path class="lite" d="M130 8H152"/>
+                <text x="158" y="11">
+                  L（八层候选）
                 </text>
               </g>
             </svg>
             <figcaption class="illustration-note">
-              示意图 · 非实测数据
+              <a href="assets/benchmark-data.json" download>
+                历史 Linux 实测 · 2026-10-14 ↗
+              </a>
             </figcaption>
           </figure>
           <figure class="chart-panel">
             <h2>
-              Fig. 03 · 多轮任务残留
+              Fig. 03 · 批次结束空闲内存
             </h2>
-            <svg class="chart" viewBox="0 0 360 175" role="img" aria-labelledby="cycle-title cycle-desc">
-              <title id="cycle-title">
-                多轮任务残留示意图，非实测数据
+            <svg class="chart" viewBox="0 0 360 175" role="img" aria-labelledby="history-3-title history-3-desc">
+              <title id="history-3-title">
+                批次结束空闲内存，历史 Linux 实测，2026-10-14
               </title>
-              <desc id="cycle-desc">
-                横轴任务轮次，纵轴归一化内存。灰线为基线示意，蓝线为 LiteBrowser 策略示意。两条曲线用于说明研究方向，非当前版本性能或无泄漏证明。
+              <desc id="history-3-desc">
+                100循环 TypedArray 与 Blob 合成负载。灰线 B3 原始基线，蓝线 L 八层候选。纵轴 cgroup memory.current，单位 MiB；横轴Cycle。全部原始采样点依次连线，非当前发行版性能结论。
               </desc>
               <g class="grid">
-                <path d="M40 20H345M40 62H345M40 104H345M40 146H345M116 20V146M192 20V146M268 20V146"/>
+                <path d="M40 146.000H345"/>
+                <path d="M40 117.364H345"/>
+                <path d="M40 88.727H345"/>
+                <path d="M40 60.091H345"/>
+                <path d="M40 31.455H345"/>
+                <path d="M40.000 20V146"/>
+                <path d="M107.778 20V146"/>
+                <path d="M175.556 20V146"/>
+                <path d="M243.333 20V146"/>
+                <path d="M345.000 20V146"/>
               </g>
               <path class="axis" fill="none" d="M40 20H345V146H40Z"/>
               <g>
-                <text x="31" y="149" text-anchor="end">
-                  0.0
-                </text>
-                <text x="31" y="107" text-anchor="end">
-                  0.5
-                </text>
-                <text x="31" y="65" text-anchor="end">
-                  1.0
-                </text>
-                <text x="31" y="23" text-anchor="end">
-                  1.5
-                </text>
-                <text x="40" y="160" text-anchor="middle">
+                <text x="33" y="149.000" text-anchor="end">
                   0
                 </text>
-                <text x="116" y="160" text-anchor="middle">
-                  5
+                <text x="33" y="120.364" text-anchor="end">
+                  250
                 </text>
-                <text x="192" y="160" text-anchor="middle">
+                <text x="33" y="91.727" text-anchor="end">
+                  500
+                </text>
+                <text x="33" y="63.091" text-anchor="end">
+                  750
+                </text>
+                <text x="33" y="34.455" text-anchor="end">
+                  1000
+                </text>
+                <text x="40.000" y="160" text-anchor="middle">
                   10
                 </text>
-                <text x="268" y="160" text-anchor="middle">
-                  15
+                <text x="107.778" y="160" text-anchor="middle">
+                  30
                 </text>
-                <text x="345" y="160" text-anchor="middle">
-                  20
+                <text x="175.556" y="160" text-anchor="middle">
+                  50
+                </text>
+                <text x="243.333" y="160" text-anchor="middle">
+                  70
+                </text>
+                <text x="345.000" y="160" text-anchor="middle">
+                  100
                 </text>
                 <text x="193" y="173" text-anchor="middle">
                   Cycle
                 </text>
-                <text transform="translate(11 88) rotate(-90)" text-anchor="middle">
-                  Normalized memory
+                <text transform="translate(10 88) rotate(-90)" text-anchor="middle">
+                  Memory (MiB)
                 </text>
               </g>
-              <path class="baseline" d="M40 146L55 131L70 125L85 118L100 120L115 110L130 108L145 101L160 103L175 93L190 91L205 84L220 86L235 77L250 70L265 72L280 62L295 65L310 58L325 57L340 52L345 53"/>
-              <path class="lite" d="M40 146L55 137L70 133L85 132L100 129L115 130L130 126L145 127L160 125L175 128L190 125L205 127L220 123L235 126L250 124L265 127L280 123L295 125L310 123L325 126L340 122L345 123"/>
-              <g aria-label="图例：灰线 Baseline，蓝线 LiteBrowser">
-                <path class="baseline" d="M54 33H76"/>
-                <text x="82" y="36">
-                  Baseline
+              <path class="baseline" data-series="B3" data-samples="10" d="M40.000 74.950 L73.889 65.158 L107.778 55.846 L141.667 37.061 L175.556 40.346 L209.444 43.092 L243.333 37.032 L277.222 37.411 L311.111 38.861 L345.000 41.992"/>
+              <circle class="sample-point baseline" cx="40.000" cy="74.950" r="1.8"/>
+              <circle class="sample-point baseline" cx="73.889" cy="65.158" r="1.8"/>
+              <circle class="sample-point baseline" cx="107.778" cy="55.846" r="1.8"/>
+              <circle class="sample-point baseline" cx="141.667" cy="37.061" r="1.8"/>
+              <circle class="sample-point baseline" cx="175.556" cy="40.346" r="1.8"/>
+              <circle class="sample-point baseline" cx="209.444" cy="43.092" r="1.8"/>
+              <circle class="sample-point baseline" cx="243.333" cy="37.032" r="1.8"/>
+              <circle class="sample-point baseline" cx="277.222" cy="37.411" r="1.8"/>
+              <circle class="sample-point baseline" cx="311.111" cy="38.861" r="1.8"/>
+              <circle class="sample-point baseline" cx="345.000" cy="41.992" r="1.8"/>
+              <path class="lite" data-series="Candidate_L" data-samples="10" d="M40.000 106.027 L73.889 104.301 L107.778 105.289 L141.667 108.599 L175.556 112.498 L209.444 115.123 L243.333 109.135 L277.222 109.742 L311.111 115.094 L345.000 109.782"/>
+              <circle class="sample-point lite" cx="40.000" cy="106.027" r="1.8"/>
+              <circle class="sample-point lite" cx="73.889" cy="104.301" r="1.8"/>
+              <circle class="sample-point lite" cx="107.778" cy="105.289" r="1.8"/>
+              <circle class="sample-point lite" cx="141.667" cy="108.599" r="1.8"/>
+              <circle class="sample-point lite" cx="175.556" cy="112.498" r="1.8"/>
+              <circle class="sample-point lite" cx="209.444" cy="115.123" r="1.8"/>
+              <circle class="sample-point lite" cx="243.333" cy="109.135" r="1.8"/>
+              <circle class="sample-point lite" cx="277.222" cy="109.742" r="1.8"/>
+              <circle class="sample-point lite" cx="311.111" cy="115.094" r="1.8"/>
+              <circle class="sample-point lite" cx="345.000" cy="109.782" r="1.8"/>
+              <g aria-label="图例：灰线 B3 原始基线；蓝线 L 八层候选">
+
+                <path class="baseline" d="M54 8H76"/>
+                <text x="82" y="11">
+                  B3
                 </text>
-                <path class="lite" d="M54 47H76"/>
-                <text x="82" y="50">
-                  LiteBrowser
+                <path class="lite" d="M130 8H152"/>
+                <text x="158" y="11">
+                  L（八层候选）
                 </text>
               </g>
             </svg>
             <figcaption class="illustration-note">
-              示意图 · 非实测数据
+              <a href="assets/benchmark-data.json" download>
+                历史 Linux 实测 · 2026-10-14 ↗
+              </a>
             </figcaption>
           </figure>
           <aside class="downloads" aria-labelledby="downloads-title">
@@ -776,7 +823,7 @@
               </a>
             </div>
             <p class="platform-note">
-              各平台构建与测试结论分别说明。
+              图表：100循环合成负载，非视频编码。
               <br>
               当前预览版性能、长期稳定性与 Create 业务仍待验证；Windows 尚未发布。
             </p>
