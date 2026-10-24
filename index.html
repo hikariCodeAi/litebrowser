@@ -1,255 +1,799 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LiteBrowser - 面向高并发与自动化的超轻量低内存浏览器</title>
-  <link rel="icon" type="image/png" href="assets/logo.png">
-  <style>
-    :root {
-      --bg: #0b0f19;
-      --card-bg: rgba(23, 32, 54, 0.7);
-      --border: rgba(255, 255, 255, 0.08);
-      --primary: #3b82f6;
-      --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
-      --accent: #10b981;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
-    
-    /* 背景装饰渐变 */
-    .glow-bg {
-      position: absolute;
-      top: -150px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 800px;
-      height: 400px;
-      background: radial-gradient(circle, rgba(59, 130, 246, 0.25) 0%, rgba(11, 15, 25, 0) 70%);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    nav {
-      position: sticky;
-      top: 0;
-      backdrop-filter: blur(12px);
-      background: rgba(11, 15, 25, 0.85);
-      border-bottom: 1px solid var(--border);
-      z-index: 100;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    .logo-container { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: #fff; font-weight: 700; font-size: 1.25rem; }
-    .logo-container img { width: 32px; height: 32px; border-radius: 6px; }
-    .nav-links { display: flex; gap: 1.5rem; align-items: center; }
-    .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.95rem; transition: color 0.2s; }
-    .nav-links a:hover { color: #fff; }
-    .btn-nav {
-      background: var(--primary-gradient);
-      color: #fff !important;
-      padding: 0.45rem 1rem;
-      border-radius: 8px;
-      font-weight: 500;
-      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
-    }
-
-    .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; position: relative; z-index: 1; }
-
-    /* Hero Section */
-    .hero { text-align: center; padding: 5rem 0 3.5rem; }
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: rgba(59, 130, 246, 0.12);
-      border: 1px solid rgba(59, 130, 246, 0.3);
-      color: #60a5fa;
-      padding: 0.3rem 0.9rem;
-      border-radius: 999px;
-      font-size: 0.85rem;
-      margin-bottom: 1.5rem;
-    }
-    .hero h1 { font-size: 3.2rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 1.25rem; }
-    .hero h1 span { background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .hero p { font-size: 1.2rem; color: var(--text-muted); max-width: 720px; margin: 0 auto 2.5rem; }
-    .hero-actions { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.85rem 1.75rem;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 600;
-      text-decoration: none;
-      transition: transform 0.15s, box-shadow 0.15s;
-    }
-    .btn-primary {
-      background: var(--primary-gradient);
-      color: #fff;
-      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35);
-    }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(37, 99, 235, 0.45); }
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border);
-      color: #fff;
-    }
-    .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); transform: translateY(-2px); }
-
-    /* Stats Grid */
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin: 3rem 0 5rem; }
-    .stat-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.5rem;
-      text-align: center;
-      backdrop-filter: blur(8px);
-    }
-    .stat-number { font-size: 2.4rem; font-weight: 800; color: #60a5fa; margin-bottom: 0.25rem; }
-    .stat-label { font-size: 0.95rem; color: var(--text-muted); }
-
-    /* Features */
-    .features-section { padding: 4rem 0; border-top: 1px solid var(--border); }
-    .section-title { text-align: center; margin-bottom: 3.5rem; }
-    .section-title h2 { font-size: 2.2rem; font-weight: 700; margin-bottom: 0.75rem; }
-    .section-title p { color: var(--text-muted); font-size: 1.05rem; }
-    
-    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
-    .feature-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 2rem;
-      transition: border-color 0.2s;
-    }
-    .feature-card:hover { border-color: rgba(59, 130, 246, 0.4); }
-    .feature-icon { font-size: 2rem; margin-bottom: 1rem; }
-    .feature-card h3 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; color: #fff; }
-    .feature-card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; }
-
-    /* Download Banner */
-    .download-section {
-      background: linear-gradient(135deg, rgba(37, 99, 235, 0.15) 0%, rgba(17, 24, 39, 0.6) 100%);
-      border: 1px solid rgba(59, 130, 246, 0.3);
-      border-radius: 20px;
-      padding: 3rem 2rem;
-      text-align: center;
-      margin: 4rem 0;
-    }
-    .download-section h2 { font-size: 2rem; margin-bottom: 1rem; }
-    .download-section p { color: var(--text-muted); max-width: 600px; margin: 0 auto 2rem; }
-
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 2.5rem 0;
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 0.9rem;
-    }
-    footer a { color: #60a5fa; text-decoration: none; }
-  </style>
-</head>
-<body>
-  <div class="glow-bg"></div>
-
-  <nav>
-    <a href="index.html" class="logo-container">
-      <img src="assets/logo.png" alt="LiteBrowser Logo">
-      <span>LiteBrowser</span>
-    </a>
-    <div class="nav-links">
-      <a href="index.html">首页</a>
-      <a href="#features">架构特点</a>
-      <a href="https://github.com/hikariCodeAi/litebrowser/blob/main/docs/performance-report.md" style="color: #60a5fa; font-weight: 600;">📊 实测报告</a>
-      <a href="https://github.com/hikariCodeAi/litebrowser" target="_blank">GitHub</a>
-      <a href="https://github.com/hikariCodeAi/litebrowser/releases" target="_blank" class="btn-nav">立即下载</a>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+      LiteBrowser · 基于 Chromium 的轻量浏览器
+    </title>
+    <meta name="description" content="LiteBrowser 预览版下载、Chromium 内存策略介绍与各平台性能验证说明。">
+    <link rel="icon" type="image/png" href="assets/logo.png">
+    <link rel="stylesheet" href="design-variables.css">
+    <link rel="stylesheet" href="motion-variables.css">
+    <style>
+      * {
+        box-sizing:border-box;
+      }
+      body {
+        margin:0;
+        background:var(--page-bg);
+        color:var(--text);
+        font-family:var(--font-body);
+        font-size:var(--text-base);
+        line-height:1.5;
+      }
+      a {
+        color:var(--brand);
+        text-decoration:none;
+      }
+      a:hover {
+        text-decoration:underline;
+      }
+      a:focus-visible,button:focus-visible {
+        outline:2px solid var(--focus);
+        outline-offset:4px;
+      }
+      p,h1,h2,h3,figure {
+        margin:0;
+      }
+      .page {
+        max-width:1440px;
+        margin:auto;
+        padding:0 var(--page-x);
+      }
+      .topbar {
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:var(--section-y);
+        min-height:70px;
+        border-bottom:1px solid var(--border);
+      }
+      .brand {
+        display:flex;
+        align-items:center;
+        gap:var(--field-gap);
+        color:var(--text);
+        white-space:nowrap;
+      }
+      .brand-image {
+        display:block;
+        object-fit:contain;
+      }
+      .brand .brand-image {
+        width:34px;
+        height:34px;
+      }
+      .brand-name {
+        font-family:var(--font-heading);
+        font-size:26px;
+        letter-spacing:-1px;
+      }
+      .brand-note {
+        border-left:1px solid var(--border);
+        padding-left:var(--field-gap);
+        color:var(--muted-text);
+        font-size:var(--text-sm);
+      }
+      .nav-links {
+        display:flex;
+        align-items:center;
+        gap:24px;
+        font-family:var(--font-label);
+        font-size:var(--text-sm);
+      }
+      .nav-links a {
+        color:var(--text);
+        white-space:nowrap;
+      }
+      .nav-links .report {
+        color:var(--brand);
+      }
+      .button {
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        gap:var(--field-gap);
+        min-height:var(--control-height);
+        padding:8px 14px;
+        border:1px solid var(--border);
+        border-radius:var(--radius);
+        font:inherit;
+        color:var(--text);
+        background:var(--panel-bg);
+        transition:background-color var(--motion-fast) var(--motion-ease),border-color var(--motion-fast) var(--motion-ease);
+      }
+      .button:hover {
+        background:var(--page-bg);
+        border-color:var(--brand);
+        text-decoration:none;
+      }
+      .button--primary {
+        border-color:var(--brand);
+        color:var(--brand);
+      }
+      .button--small {
+        min-height:32px;
+        padding:4px 12px;
+      }
+      .button--full {
+        width:100%;
+      }
+      .button:disabled,.button[aria-disabled=true] {
+        opacity:.5;
+        pointer-events:none;
+      }
+      .button[aria-busy=true] {
+        cursor:progress;
+      }
+      .icon {
+        width:18px;
+        height:18px;
+        display:inline-block;
+        flex:none;
+      }
+      .intro {
+        text-align:center;
+        padding-top:21px;
+      }
+      .eyebrow {
+        color:var(--muted-text);
+        font-size:10px;
+        letter-spacing:3px;
+      }
+      .intro h1 {
+        font-family:var(--font-heading);
+        font-weight:400;
+        font-size:76px;
+        letter-spacing:-4px;
+        line-height:1.12;
+        margin-top:4px;
+      }
+      .subtitle {
+        font-size:23px;
+        letter-spacing:5px;
+        margin-top:2px;
+      }
+      .version {
+        font-family:var(--font-label);
+        font-size:10px;
+        color:var(--muted-text);
+        margin-top:8px;
+        letter-spacing:.5px;
+      }
+      .visual {
+        height:310px;
+        position:relative;
+        max-width:1050px;
+        margin:0 auto;
+      }
+      .hero-image {
+        width:460px;
+        height:300px;
+        position:absolute;
+        left:50%;
+        top:0;
+        transform:translateX(-50%);
+        object-fit:contain;
+      }
+      .annotation {
+        position:absolute;
+        z-index:1;
+        max-width:230px;
+        font-size:var(--text-sm);
+        color:var(--muted-text);
+        line-height:1.7;
+      }
+      .annotation strong {
+        display:block;
+        font-weight:400;
+        font-size:var(--text-lg);
+        color:var(--text);
+        margin-bottom:2px;
+      }
+      .annotation--cache {
+        left:3%;
+        top:12%;
+      }
+      .annotation--idle {
+        right:0;
+        top:14%;
+      }
+      .annotation--media {
+        right:0;
+        top:70%;
+      }
+      .leaders {
+        position:absolute;
+        inset:0;
+        width:100%;
+        height:100%;
+        pointer-events:none;
+      }
+      .leaders path {
+        fill:none;
+        stroke:var(--muted-text);
+        stroke-width:1;
+        vector-effect:non-scaling-stroke;
+      }
+      .leaders circle {
+        fill:var(--muted-text);
+        stroke:var(--page-bg);
+        stroke-width:1.5;
+        vector-effect:non-scaling-stroke;
+      }
+      .figure-caption {
+        position:absolute;
+        bottom:1px;
+        left:0;
+        right:0;
+        text-align:center;
+        color:var(--muted-text);
+        font-size:11px;
+        letter-spacing:1.5px;
+      }
+      .research {
+        display:grid;
+        grid-template-columns:1fr 1fr .9fr;
+        border-top:1px solid var(--border);
+        margin-top:14px;
+        padding:21px 0 19px;
+        gap:28px;
+      }
+      .chart-panel {
+        padding-right:28px;
+        border-right:1px solid var(--border);
+        min-width:0;
+      }
+      .research h2 {
+        font-size:var(--text-lg);
+        font-weight:400;
+        line-height:1.4;
+        margin-bottom:9px;
+      }
+      .chart {
+        display:block;
+        width:100%;
+        height:170px;
+        overflow:visible;
+      }
+      .chart text {
+        fill:var(--text);
+        font-family:var(--font-heading);
+        font-size:10px;
+      }
+      .chart .grid {
+        stroke:var(--grid);
+        stroke-width:.7;
+      }
+      .chart .axis {
+        stroke:var(--baseline);
+        stroke-width:.7;
+      }
+      .chart .baseline {
+        stroke:var(--baseline);
+        fill:none;
+        stroke-width:1.8;
+      }
+      .chart .lite {
+        stroke:var(--brand);
+        fill:none;
+        stroke-width:1.8;
+      }
+      .illustration-note {
+        font-size:var(--text-xs);
+        color:var(--muted-text);
+        margin-top:5px;
+      }
+      .downloads {
+        min-width:0;
+      }
+      .download-links {
+        display:flex;
+        flex-direction:column;
+        gap:8px;
+      }
+      .download-links .button {
+        justify-content:space-between;
+        font-size:var(--text-sm);
+        min-height:36px;
+      }
+      .platform {
+        display:flex;
+        align-items:center;
+        gap:9px;
+      }
+      .platform-mark {
+        font-family:var(--font-code);
+        font-size:12px;
+        color:var(--muted-text);
+      }
+      .arrow {
+        color:var(--brand);
+        font-family:var(--font-label);
+      }
+      .resources {
+        border-top:1px solid var(--border);
+        margin-top:14px;
+        padding-top:11px;
+        display:flex;
+        flex-direction:column;
+        gap:5px;
+        font-size:var(--text-sm);
+      }
+      .platform-note {
+        font-size:var(--text-xs);
+        color:var(--muted-text);
+        margin-top:8px;
+        line-height:1.6;
+      }
+      .footer {
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        border-top:1px solid var(--border);
+        padding:12px 0 16px;
+        color:var(--muted-text);
+        font-size:10px;
+        letter-spacing:.5px;
+      }
+      .footer a {
+        color:inherit;
+      }
+      .footer-study {
+        letter-spacing:1.5px;
+      }
+      @media(min-width:701px) and (max-height:810px) {
+        .topbar {
+          min-height:61px;
+        }
+        .intro {
+          padding-top:4px;
+        }
+        .intro h1 {
+          font-size:54px;
+        }
+        .subtitle {
+          font-size:18px;
+        }
+        .visual {
+          height:247px;
+        }
+        .hero-image {
+          height:240px;
+          width:370px;
+        }
+        .research {
+          margin-top:10px;
+          padding-top:16px;
+          padding-bottom:14px;
+        }
+        .chart {
+          height:149px;
+        }
+      }
+      @media(min-width:1500px) and (min-height:900px) {
+        .intro {
+          padding-top:28px;
+        }
+        .intro h1 {
+          font-size:84px;
+        }
+        .visual {
+          height:355px;
+        }
+        .hero-image {
+          height:345px;
+          width:510px;
+        }
+        .research {
+          padding-top:25px;
+          padding-bottom:24px;
+        }
+        .chart {
+          height:195px;
+        }
+      }
+      @media(max-width:1050px) {
+        .leaders path {
+          d: path("M275 53H330L430 110M770 61H735L640 125M770 235H720L620 230");
+        }
+        .brand-note {
+          display:none;
+        }
+        .nav-links {
+          gap:16px;
+        }
+        .visual {
+          max-width:850px;
+        }
+        .annotation {
+          max-width:185px;
+        }
+        .annotation--cache {
+          left:0;
+        }
+        .hero-image {
+          width:410px;
+        }
+        .research {
+          gap:20px;
+        }
+        .chart-panel {
+          padding-right:20px;
+        }
+      }
+      @media(max-width:700px) {
+        .topbar {
+          padding:16px 0;
+          flex-direction:column;
+          align-items:flex-start;
+          gap:14px;
+        }
+        .nav-links {
+          flex-wrap:wrap;
+          gap:12px 18px;
+          font-size:12px;
+        }
+        .brand-name {
+          font-size:25px;
+        }
+        .intro {
+          padding-top:var(--section-y);
+        }
+        .eyebrow {
+          font-size:8px;
+          letter-spacing:2px;
+        }
+        .intro h1 {
+          font-size:56px;
+          letter-spacing:-3px;
+        }
+        .subtitle {
+          font-size:17px;
+          letter-spacing:2px;
+        }
+        .version {
+          font-size:9px;
+        }
+        .visual {
+          height:auto;
+          display:flex;
+          flex-direction:column;
+          gap:16px;
+          padding-bottom:30px;
+        }
+        .hero-image {
+          position:static;
+          transform:none;
+          width:100%;
+          height:270px;
+          order:0;
+        }
+        .annotation {
+          position:static;
+          max-width:none;
+          font-size:12px;
+          padding-left:12px;
+          border-left:1px solid var(--border);
+        }
+        .annotation strong {
+          font-size:16px;
+          display:inline;
+          margin-right:8px;
+        }
+        .leaders {
+          display:none;
+        }
+        .figure-caption {
+          bottom:0;
+          font-size:9px;
+          letter-spacing:1px;
+        }
+        .research {
+          display:flex;
+          flex-direction:column;
+          margin-top:20px;
+          gap:24px;
+          padding-top:22px;
+        }
+        .chart-panel {
+          padding:0 0 20px;
+          border-right:0;
+          border-bottom:1px solid var(--border);
+        }
+        .chart {
+          height:auto;
+          aspect-ratio:2.05;
+        }
+        .research h2 {
+          font-size:18px;
+        }
+        .downloads {
+          padding-bottom:8px;
+        }
+        .footer {
+          align-items:flex-start;
+          flex-direction:column;
+          gap:8px;
+          font-size:9px;
+        }
+        .footer-study {
+          letter-spacing:1px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="topbar">
+        <a class="brand" href="index.html">
+          <img class="brand-image" src="assets/logo.png" alt="LiteBrowser 标志" width="34" height="34">
+          <span class="brand-name">
+            LiteBrowser
+          </span>
+          <span class="brand-note">
+            Systems
+            &amp;
+            Architecture
+          </span>
+        </a>
+        <nav class="nav-links" aria-label="主导航">
+          <a href="index.html">
+            首页
+          </a>
+          <a href="#features">
+            架构特点
+          </a>
+          <a class="report" href="https://github.com/hikariCodeAi/litebrowser/blob/main/docs/performance-report.md">
+            📊 实测报告
+          </a>
+          <a href="https://github.com/hikariCodeAi/litebrowser" target="_blank" rel="noopener">
+            GitHub
+          </a>
+          <a class="button button--small button--primary" href="https://github.com/hikariCodeAi/litebrowser/releases" target="_blank" rel="noopener">
+            立即下载
+          </a>
+        </nav>
+      </header>
+      <main>
+        <section class="intro" aria-labelledby="page-title">
+          <p class="eyebrow">
+            BROWSER SYSTEMS / DESIGN STUDY
+          </p>
+          <h1 id="page-title">
+            LiteBrowser
+          </h1>
+          <p class="subtitle">
+            基于 Chromium 的轻量浏览器
+          </p>
+          <p class="version">
+            PREVIEW · Chromium 155.0.8059.39 · 标准 CDP 接口
+          </p>
+        </section>
+        <figure class="visual" id="features" aria-label="Chromium 内存与媒体策略示意">
+          <img class="brand-image hero-image" src="assets/hero-chip.png" alt="蓝色三瓣 Chromium 圆底与中央白色芯片的立体图" width="1448" height="1086">
+          <svg class="leaders" viewBox="0 0 1050 310" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M255 53H330L430 110M810 61H755L640 125M810 235H750L620 230"/>
+            <circle cx="430" cy="110" r="3"/>
+            <circle cx="640" cy="125" r="3"/>
+            <circle cx="620" cy="230" r="3"/>
+          </svg>
+          <div class="annotation annotation--cache">
+            <strong>
+              缓存预算
+            </strong>
+            管理绘制与媒体缓存预算，按需保留。
+          </div>
+          <div class="annotation annotation--idle">
+            <strong>
+              空闲回收
+            </strong>
+            回收可释放的空闲堆页，归还系统。
+          </div>
+          <div class="annotation annotation--media">
+            <strong>
+              按需媒体
+            </strong>
+            按消费状态管理闲置资源，保留原生回退。
+          </div>
+          <figcaption class="figure-caption">
+            FIG. 01 / Chromium + memory policy
+          </figcaption>
+        </figure>
+        <section class="research" aria-label="示意图与预览版资料">
+          <figure class="chart-panel">
+            <h2>
+              Fig. 02 · 内存占用趋势
+            </h2>
+            <svg class="chart" viewBox="0 0 360 175" role="img" aria-labelledby="trend-title trend-desc">
+              <title id="trend-title">
+                内存占用趋势示意图，非实测数据
+              </title>
+              <desc id="trend-desc">
+                横轴归一化时间，纵轴归一化内存。灰线代表基线示意，蓝线代表 LiteBrowser 策略示意；曲线仅用于解释设计意图，不表示发行版测量结果。
+              </desc>
+              <g class="grid">
+                <path d="M40 20H345M40 62H345M40 104H345M40 146H345M101 20V146M162 20V146M223 20V146M284 20V146"/>
+              </g>
+              <path class="axis" fill="none" d="M40 20H345V146H40Z"/>
+              <g>
+                <text x="31" y="149" text-anchor="end">
+                  0.0
+                </text>
+                <text x="31" y="107" text-anchor="end">
+                  0.5
+                </text>
+                <text x="31" y="65" text-anchor="end">
+                  1.0
+                </text>
+                <text x="31" y="23" text-anchor="end">
+                  1.5
+                </text>
+                <text x="40" y="160" text-anchor="middle">
+                  0
+                </text>
+                <text x="101" y="160" text-anchor="middle">
+                  0.2
+                </text>
+                <text x="162" y="160" text-anchor="middle">
+                  0.4
+                </text>
+                <text x="223" y="160" text-anchor="middle">
+                  0.6
+                </text>
+                <text x="284" y="160" text-anchor="middle">
+                  0.8
+                </text>
+                <text x="345" y="160" text-anchor="middle">
+                  1.0
+                </text>
+                <text x="193" y="173" text-anchor="middle">
+                  Normalized time
+                </text>
+                <text transform="translate(11 88) rotate(-90)" text-anchor="middle">
+                  Normalized memory
+                </text>
+              </g>
+              <path class="baseline" d="M40 146L51 135L62 128L73 120L84 119L95 108L106 111L117 100L128 101L139 91L150 94L161 84L172 85L183 76L194 78L205 70L216 72L227 65L238 69L249 62L260 64L271 57L282 61L293 53L304 59L315 51L326 54L337 48L345 50"/>
+              <path class="lite" d="M40 146L51 139L62 134L73 129L84 127L95 122L106 121L117 116L128 117L139 112L150 114L161 109L172 110L183 107L194 109L205 105L216 108L227 105L238 107L249 104L260 106L271 103L282 106L293 103L304 106L315 103L326 105L337 102L345 104"/>
+              <g aria-label="图例：灰线 Baseline，蓝线 LiteBrowser">
+                <path class="baseline" d="M54 33H76"/>
+                <text x="82" y="36">
+                  Baseline
+                </text>
+                <path class="lite" d="M54 47H76"/>
+                <text x="82" y="50">
+                  LiteBrowser
+                </text>
+              </g>
+            </svg>
+            <figcaption class="illustration-note">
+              示意图 · 非实测数据
+            </figcaption>
+          </figure>
+          <figure class="chart-panel">
+            <h2>
+              Fig. 03 · 多轮任务残留
+            </h2>
+            <svg class="chart" viewBox="0 0 360 175" role="img" aria-labelledby="cycle-title cycle-desc">
+              <title id="cycle-title">
+                多轮任务残留示意图，非实测数据
+              </title>
+              <desc id="cycle-desc">
+                横轴任务轮次，纵轴归一化内存。灰线为基线示意，蓝线为 LiteBrowser 策略示意。两条曲线用于说明研究方向，非当前版本性能或无泄漏证明。
+              </desc>
+              <g class="grid">
+                <path d="M40 20H345M40 62H345M40 104H345M40 146H345M116 20V146M192 20V146M268 20V146"/>
+              </g>
+              <path class="axis" fill="none" d="M40 20H345V146H40Z"/>
+              <g>
+                <text x="31" y="149" text-anchor="end">
+                  0.0
+                </text>
+                <text x="31" y="107" text-anchor="end">
+                  0.5
+                </text>
+                <text x="31" y="65" text-anchor="end">
+                  1.0
+                </text>
+                <text x="31" y="23" text-anchor="end">
+                  1.5
+                </text>
+                <text x="40" y="160" text-anchor="middle">
+                  0
+                </text>
+                <text x="116" y="160" text-anchor="middle">
+                  5
+                </text>
+                <text x="192" y="160" text-anchor="middle">
+                  10
+                </text>
+                <text x="268" y="160" text-anchor="middle">
+                  15
+                </text>
+                <text x="345" y="160" text-anchor="middle">
+                  20
+                </text>
+                <text x="193" y="173" text-anchor="middle">
+                  Cycle
+                </text>
+                <text transform="translate(11 88) rotate(-90)" text-anchor="middle">
+                  Normalized memory
+                </text>
+              </g>
+              <path class="baseline" d="M40 146L55 131L70 125L85 118L100 120L115 110L130 108L145 101L160 103L175 93L190 91L205 84L220 86L235 77L250 70L265 72L280 62L295 65L310 58L325 57L340 52L345 53"/>
+              <path class="lite" d="M40 146L55 137L70 133L85 132L100 129L115 130L130 126L145 127L160 125L175 128L190 125L205 127L220 123L235 126L250 124L265 127L280 123L295 125L310 123L325 126L340 122L345 123"/>
+              <g aria-label="图例：灰线 Baseline，蓝线 LiteBrowser">
+                <path class="baseline" d="M54 33H76"/>
+                <text x="82" y="36">
+                  Baseline
+                </text>
+                <path class="lite" d="M54 47H76"/>
+                <text x="82" y="50">
+                  LiteBrowser
+                </text>
+              </g>
+            </svg>
+            <figcaption class="illustration-note">
+              示意图 · 非实测数据
+            </figcaption>
+          </figure>
+          <aside class="downloads" aria-labelledby="downloads-title">
+            <h2 id="downloads-title">
+              预览版与研究资料
+            </h2>
+            <div class="download-links">
+              <a class="button button--full" href="https://github.com/hikariCodeAi/litebrowser/releases/tag/macos-arm64-155.0.8059.39-preview.1">
+                <span class="platform">
+                  macOS · Apple Silicon
+                </span>
+                <span class="arrow" aria-hidden="true">
+                  ↓
+                </span>
+              </a>
+              <a class="button button--full" href="https://github.com/hikariCodeAi/litebrowser/releases/tag/linux-x86_64-1.0.0-preview.1">
+                <span class="platform">
+                  Linux · x86_64
+                </span>
+                <span class="arrow" aria-hidden="true">
+                  ↓
+                </span>
+              </a>
+            </div>
+            <div class="resources">
+              <a href="https://github.com/hikariCodeAi/litebrowser/blob/main/docs/performance-report.md">
+                阅读性能验证说明
+                <span aria-hidden="true">
+                  ↗
+                </span>
+              </a>
+              <a href="https://github.com/hikariCodeAi/litebrowser/releases">
+                查看版本说明
+                <span aria-hidden="true">
+                  ↗
+                </span>
+              </a>
+            </div>
+            <p class="platform-note">
+              各平台构建与测试结论分别说明。
+              <br>
+              当前预览版性能、长期稳定性与 Create 业务仍待验证；Windows 尚未发布。
+            </p>
+          </aside>
+        </section>
+      </main>
+      <footer class="footer">
+        <span>
+          © 2026 LiteBrowser Project　 |
+          <a href="https://github.com/hikariCodeAi/litebrowser" target="_blank" rel="noopener">
+            公开二进制发布
+          </a>
+        </span>
+        <span class="footer-study">
+          BROWSER SYSTEMS / DESIGN STUDY　 |　 2026
+        </span>
+      </footer>
     </div>
-  </nav>
-
-  <div class="container">
-    <section class="hero">
-      <div class="badge">🚀 LiteBrowser 1.0.0 Preview</div>
-      <h1>专为高并发与自动化打造的<br><span>超轻量 Chromium 浏览器</span></h1>
-      <p>基于 Chromium，包含闲置媒体池、绘制缓存与空闲堆页的预算管理和回收策略，保留原生回退路径。本次 Linux 预览版的性能、长期稳定性与 Create 业务仍待验证。</p>
-      <div class="hero-actions">
-        <a href="https://github.com/hikariCodeAi/litebrowser/blob/main/docs/performance-report.md" class="btn btn-primary">📊 查看性能验证范围</a>
-        <a href="https://github.com/hikariCodeAi/litebrowser/releases/tag/macos-arm64-155.0.8059.39-preview.1" class="btn btn-secondary">⬇️ 下载 macOS (Apple Silicon)</a>
-        <a href="https://github.com/hikariCodeAi/litebrowser/releases/tag/linux-x86_64-1.0.0-preview.1" class="btn btn-secondary">⬇️ 下载 Linux (x86_64)</a>
-      </div>
-    </section>
-
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-number">1.0.0</div>
-        <div class="stat-label">产品版本 · build 1</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number">155</div>
-        <div class="stat-label">Chromium 155.0.8059.39</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number">CDP</div>
-        <div class="stat-label">标准自动化接口</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number">Preview</div>
-        <div class="stat-label">Linux x86_64 / macOS arm64</div>
-      </div>
-    </div>
-
-    <section id="features" class="features-section">
-      <div class="section-title">
-        <h2>缓存与运行时策略</h2>
-        <p>基于 Chromium 的媒体、内存与绘制策略；实际效果以对应版本的受控验证为准</p>
-      </div>
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">🎬</div>
-          <h3>智能媒体池 (Media Pipeline)</h3>
-          <p>对闲置解码帧与可回收媒体缓存实施预算管理，按消费状态回收余量；需要原生媒体能力时保留回退路径。</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🧹</div>
-          <h3>PartitionAlloc 紧凑堆回收</h3>
-          <p>自适应分析存活对象集，在页面完成突发并发与渲染后，以系统级的 decommit / discard 动作将提交的空闲页真实归还给操作系统。</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🖼️</div>
-          <h3>渲染与图层裁剪 (ResourcePool)</h3>
-          <p>压缩 Skia 与绘制产物纹理缓存预算。后台或无观察者的离屏缓冲按需销毁，通过原生路径处理仍被使用的资源；具体视觉正确性与收益需按版本验证。</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">⚡</div>
-          <h3>标准 CDP 自动化接入</h3>
-          <p>提供 Chromium 标准 CDP 接口供自动化客户端接入。各平台的已测范围、已知限制与完整包校验和见对应 Release 说明。</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="download-section">
-      <h2>即刻体验超轻量浏览</h2>
-      <p>提供 Linux x86_64 与 macOS (Apple Silicon M系列) 预览包。Linux 暂不支持直接自动安装更新；请按对应 Release 说明下载并核对 SHA256。Windows 版本尚未发布。</p>
-      <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
-        <a href="https://github.com/hikariCodeAi/litebrowser/releases/tag/macos-arm64-155.0.8059.39-preview.1" class="btn btn-primary">下载 macOS 预发布包 (ZIP)</a>
-        <a href="https://github.com/hikariCodeAi/litebrowser/releases/tag/linux-x86_64-1.0.0-preview.1" class="btn btn-primary">下载 Linux 预发布包 (tar.gz)</a>
-        <a href="https://github.com/hikariCodeAi/litebrowser/blob/main/docs/performance-report.md" class="btn btn-secondary">查看性能验证说明</a>
-      </div>
-    </section>
-  </div>
-
-  <footer>
-    <div class="container">
-      <p>&copy; 2026 LiteBrowser Project. 公开二进制发布托管于 <a href="https://github.com/hikariCodeAi/litebrowser" target="_blank">GitHub</a></p>
-    </div>
-  </footer>
-</body>
+  </body>
 </html>

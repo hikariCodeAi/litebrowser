@@ -1,0 +1,12 @@
+:root {
+  --page-bg:#faf9f5; --panel-bg:#fffefa; --text:#111c2d; --muted-text:#637086; --brand:#0865ea; --border:#cbd0d8; --focus:#004fb9;
+  --success:#28704e; --warning:#846020; --danger:#a93636; --info:#285d99;
+  --baseline:#7a8089; --grid:#e3e5e8;
+  --font-heading:Georgia,'Times New Roman','Songti SC','Noto Serif CJK SC',serif;
+  --font-body:'Songti SC','STSong','Noto Serif CJK SC',Georgia,serif;
+  --font-label:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;
+  --font-code:ui-monospace,SFMono-Regular,Consolas,monospace;
+  --space:4px; --page-x:40px; --section-y:20px; --panel-padding:16px; --field-gap:12px; --control-height:38px;
+  --text-xs:11px; --text-sm:13px; --text-base:15px; --text-lg:19px; --radius:4px;
+}
+@media(max-width:700px){:root{--page-x:20px;--section-y:28px;}}

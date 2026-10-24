@@ -1,0 +1,7 @@
+{
+  "direction": "docs",
+  "colors": {"pageBg":"#faf9f5","panelBg":"#fffefa","text":"#111c2d","mutedText":"#637086","brand":"#0865ea","border":"#cbd0d8","focus":"#004fb9","success":"#28704e","warning":"#846020","danger":"#a93636","info":"#285d99"},
+  "fonts": {"heading":"Georgia, Times New Roman, Songti SC, Noto Serif CJK SC, serif","body":"Songti SC, STSong, Noto Serif CJK SC, Georgia, serif","label":"system sans-serif with PingFang SC and Microsoft YaHei","code":"system monospace"},
+  "spacing": {"base":4,"pageX":40,"mobilePageX":20,"sectionY":20,"panelPadding":16,"fieldGap":12,"controlHeight":38},
+  "motion": {"level":"subtle","fast":150,"normal":220,"slow":320,"easing":"ease-out","reducedMotion":"zero duration"}
+}

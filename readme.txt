@@ -29,3 +29,9 @@ Mac 性能、长期稳定性及 Create 业务验收尚未运行，不作正式�
 
 Windows x64：尚未提供可下载的 Windows Release。
 仅下载 Releases 中已实际上传的平台资产。各平台构建和测试结论不互相替代。
+
+公开主页导航：
+index.html：学术风静态发布页，包含策略说明、明确标注的非实测示意图与真实平台下载入口。
+assets/：本层公开品牌图片与独立主视觉，见 assets/readme.txt。
+DESIGN_GUIDE.md、design-theme.json、design-variables.css、motion-variables.css：主页设计规范与集中主题变量。
+AGENTS.md：公开仓库的内容和样式协作约定。

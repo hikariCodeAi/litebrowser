@@ -1,0 +1,2 @@
+:root{--motion-fast:150ms;--motion-normal:220ms;--motion-slow:320ms;--motion-ease:ease-out;}
+@media(prefers-reduced-motion:reduce){:root{--motion-fast:0ms;--motion-normal:0ms;--motion-slow:0ms;}html{scroll-behavior:auto;}}
