@@ -4,7 +4,7 @@ LiteBrowser 公开发布仓库
 
 下载入口：https://github.com/hikariCodeAi/litebrowser/releases
 
-当前平台状态（2026-10-21）：
+当前平台状态（2026-10-27）：
 Linux x86_64：提供 LiteBrowser 1.0.0（build 1）Preview 1，基于 Chromium 155.0.8059.39。
 下载与说明：https://github.com/hikariCodeAi/litebrowser/releases/tag/linux-x86_64-1.0.0-preview.1
 下载 litebrowser-1.0.0-linux-x86_64.tar.gz 与同名 .sha256；先用 sha256sum -c 校验，解包后以普通用户执行 LiteBrowser-linux-x86_64/chrome。
@@ -27,7 +27,13 @@ macOS 26.0.1 首次自动验证在初始 CDP 控制阶段超时，首次启动�
 Mac 性能、长期稳定性及 Create 业务验收尚未运行，不作正式产品验收或性能收益声明。
 随包原始许可与版权声明保持；旧 INTERNAL-NOTICE 记录构建时范围，本次按后续授权公开供试用，不新增项目源码开源许可。
 
-Windows x64：尚未提供可下载的 Windows Release。
+Windows x64：提供 LiteBrowser 1.0.0（build 1）Preview 1，基于 Chromium 155.0.8059.39。
+下载与说明：https://github.com/hikariCodeAi/litebrowser/releases/tag/windows-x64-1.0.0-preview.1
+下载 litebrowser-1.0.0-windows-x64.zip 与同名 .sha256；先用 Get-FileHash -Algorithm SHA256 校验，完整解压到可写目录后以普通用户运行 LiteBrowser\chrome.exe。
+ZIP 大小：291,181,914 字节。
+SHA256：278d0c21972a4aa4ac7a57f1dfcb98058cb1a7bb7bf920a5873fefa450e7572a
+完整构建、静态 PE 导入/系统 DLL 闭包审计、第三方许可证/NOTICE/credits 覆盖、组件化 ffmpeg.dll 独立重编与替换加载运行验证均通过；在 Windows Server 2022 Datacenter（10.0.20348.169 x64）非管理员交互桌面会话下，stage、可见窗口与全新解压目录均通过基础导航/JS/图片/WAV/WebM/MP4、Canvas、About 品牌/版本/试用状态、重启持久性、原生受限低完整性渲染器沙箱和正常退出检查。
+本预览版面向 64 位 Windows 10/11（x86-64 / SSE3），当前仅在 Windows Server 2022 Datacenter（build 20348.169）完成实测；普通桌面 Windows 10/11 PC 兼容性尚未实测。二进制未做 Authenticode 代码签名；Windows 更新通过发布仓库手动下载，不支持自动安装更新。Windows 版性能对比、长期稳定性（真实 30 天/48 小时等待）、真实 Create 业务和 B1/B2 均未测试。
 仅下载 Releases 中已实际上传的平台资产。各平台构建和测试结论不互相替代。
 
 公开主页导航：
